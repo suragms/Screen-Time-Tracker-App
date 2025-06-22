@@ -1,0 +1,153 @@
+{% extends 'tracker/admin/base.html' %}
+
+{% block title %}User Management - Screen Time Tracker{% endblock %}
+{% block page_title %}User Management{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h6 class="m-0 font-weight-bold">
+            <i class="fas fa-users me-2"></i>
+            All Users ({{ users.count }})
+        </h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Date Joined</th>
+                        <th>Last Login</th>
+                        <th>Status</th>
+                        <th>Total Entries</th>
+                        <th>Total Screen Time</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                {% if user.profile.profile_picture %}
+                                    <img src="{{ user.profile.profile_picture.url }}" 
+                                         class="rounded-circle me-2" width="32" height="32" 
+                                         alt="{{ user.username }}">
+                                {% else %}
+                                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-2" 
+                                         style="width: 32px; height: 32px;">
+                                        <i class="fas fa-user text-white"></i>
+                                    </div>
+                                {% endif %}
+                                <strong>{{ user.username }}</strong>
+                            </div>
+                        </td>
+                        <td>{{ user.email|default:"-" }}</td>
+                        <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                        <td>
+                            {% if user.last_login %}
+                                <span class="text-success">{{ user.last_login_display }}</span>
+                            {% else %}
+                                <span class="text-muted">Never</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.is_active %}
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check me-1"></i>Active
+                                </span>
+                            {% else %}
+                                <span class="badge bg-danger">
+                                    <i class="fas fa-times me-1"></i>Inactive
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge bg-info">{{ user.total_entries }}</span>
+                        </td>
+                        <td>
+                            {% if user.total_screen_time > 0 %}
+                                <span class="text-primary fw-bold">{{ user.total_screen_time|floatformat:0 }} min</span>
+                            {% else %}
+                                <span class="text-muted">0 min</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'user_detail' user.id %}" 
+                               class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye me-1"></i>View
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted">
+                            <i class="fas fa-users me-2"></i>
+                            No users found
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- User Statistics Summary -->
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-users fa-2x text-primary mb-2"></i>
+                <h5 class="card-title">{{ users.count }}</h5>
+                <p class="card-text text-muted">Total Users</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-user-check fa-2x text-success mb-2"></i>
+                <h5 class="card-title">
+                    {{ users|length|add:"-1" }}
+                </h5>
+                <p class="card-text text-muted">Active Users</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-clock fa-2x text-info mb-2"></i>
+                <h5 class="card-title">
+                    {% with total_entries=0 %}
+                        {% for user in users %}
+                            {% with total_entries=total_entries|add:user.total_entries %}{% endwith %}
+                        {% endfor %}
+                        {{ total_entries }}
+                    {% endwith %}
+                </h5>
+                <p class="card-text text-muted">Total Entries</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-hourglass-half fa-2x text-warning mb-2"></i>
+                <h5 class="card-title">
+                    {% with total_time=0 %}
+                        {% for user in users %}
+                            {% with total_time=total_time|add:user.total_screen_time %}{% endwith %}
+                        {% endfor %}
+                        {{ total_time|floatformat:0 }}
+                    {% endwith %}
+                </h5>
+                <p class="card-text text-muted">Total Minutes</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

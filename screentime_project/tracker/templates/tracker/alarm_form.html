@@ -1,0 +1,471 @@
+{% extends 'tracker/base.html' %}
+{% load tracker_extras %}
+
+{% block title %}{% if alarm %}Edit Alarm{% else %}New Alarm{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h2 class="card-title mb-4 text-center">
+                        {% if alarm %}
+                            <i class="fas fa-edit text-primary me-2"></i>Edit Alarm
+                        {% else %}
+                            <i class="fas fa-bell text-primary me-2"></i>New Alarm
+                        {% endif %}
+                    </h2>
+
+                    <form method="post" class="alarm-form">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label for="id_name" class="form-label">Alarm Name</label>
+                            <input type="text" name="name" id="id_name" class="form-control form-select-lg" 
+                                   value="{{ alarm.title|default:'' }}" required
+                                   placeholder="Enter alarm name">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Time</label>
+                            <div class="time-inputs">
+                                <div class="time-display mb-3">
+                                    <div class="selected-time">
+                                        <span class="time-value">--:--</span>
+                                        <span class="time-period">AM</span>
+                                    </div>
+                                </div>
+                                <div class="row g-2">
+                                    <div class="col">
+                                        <select name="hour" id="id_hour" class="form-select form-select-lg" required>
+                                            <option value="" disabled selected>Hour</option>
+                                            {% for h in "1,2,3,4,5,6,7,8,9,10,11,12"|time_options %}
+                                                <option value="{{ h }}" {% if alarm.hour|add:0 == h|add:0 or alarm.hour|add:12 == h|add:0 or alarm.hour == h|add:12 %}selected{% endif %}>{{ h }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-auto">
+                                        <span class="time-separator">:</span>
+                                    </div>
+                                    <div class="col">
+                                        <select name="minute" id="id_minute" class="form-select form-select-lg" required>
+                                            <option value="" disabled selected>Minute</option>
+                                            {% for m in "00,05,10,15,20,25,30,35,40,45,50,55"|time_options %}
+                                                <option value="{{ m }}" {% if alarm.minute == m %}selected{% endif %}>{{ m }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <select name="period" id="id_period" class="form-select form-select-lg" required>
+                                            <option value="AM" {% if alarm.hour < 12 %}selected{% endif %}>AM</option>
+                                            <option value="PM" {% if alarm.hour >= 12 %}selected{% endif %}>PM</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="quick-times mt-3">
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <button type="button" class="btn btn-outline-primary w-100 quick-time" data-hour="5" data-minute="30" data-period="AM">
+                                                <i class="fas fa-sun me-2"></i>5:30 AM
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button type="button" class="btn btn-outline-primary w-100 quick-time" data-hour="6" data-minute="00" data-period="AM">
+                                                <i class="fas fa-sun me-2"></i>6:00 AM
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button type="button" class="btn btn-outline-primary w-100 quick-time" data-hour="7" data-minute="00" data-period="AM">
+                                                <i class="fas fa-sun me-2"></i>7:00 AM
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button type="button" class="btn btn-outline-primary w-100 quick-time" data-hour="8" data-minute="00" data-period="AM">
+                                                <i class="fas fa-coffee me-2"></i>8:00 AM
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button type="button" class="btn btn-outline-primary w-100 quick-time" data-hour="9" data-minute="00" data-period="AM">
+                                                <i class="fas fa-coffee me-2"></i>9:00 AM
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button type="button" class="btn btn-outline-primary w-100 quick-time" data-hour="10" data-minute="00" data-period="AM">
+                                                <i class="fas fa-coffee me-2"></i>10:00 AM
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button type="button" class="btn btn-outline-primary w-100 quick-time" data-hour="11" data-minute="00" data-period="AM">
+                                                <i class="fas fa-utensils me-2"></i>11:00 AM
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button type="button" class="btn btn-outline-primary w-100 quick-time" data-hour="12" data-minute="00" data-period="PM">
+                                                <i class="fas fa-utensils me-2"></i>12:00 PM
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button type="button" class="btn btn-outline-primary w-100 quick-time" data-hour="1" data-minute="00" data-period="PM">
+                                                <i class="fas fa-utensils me-2"></i>1:00 PM
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button type="button" class="btn btn-outline-primary w-100 quick-time" data-hour="2" data-minute="00" data-period="PM">
+                                                <i class="fas fa-sun me-2"></i>2:00 PM
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button type="button" class="btn btn-outline-primary w-100 quick-time" data-hour="3" data-minute="00" data-period="PM">
+                                                <i class="fas fa-sun me-2"></i>3:00 PM
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button type="button" class="btn btn-outline-primary w-100 quick-time" data-hour="4" data-minute="00" data-period="PM">
+                                                <i class="fas fa-sun me-2"></i>4:00 PM
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button type="button" class="btn btn-outline-primary w-100 quick-time" data-hour="5" data-minute="00" data-period="PM">
+                                                <i class="fas fa-sun me-2"></i>5:00 PM
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button type="button" class="btn btn-outline-primary w-100 quick-time" data-hour="6" data-minute="00" data-period="PM">
+                                                <i class="fas fa-moon me-2"></i>6:00 PM
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button type="button" class="btn btn-outline-primary w-100 quick-time" data-hour="7" data-minute="00" data-period="PM">
+                                                <i class="fas fa-moon me-2"></i>7:00 PM
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button type="button" class="btn btn-outline-primary w-100 quick-time" data-hour="8" data-minute="00" data-period="PM">
+                                                <i class="fas fa-moon me-2"></i>8:00 PM
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button type="button" class="btn btn-outline-primary w-100 quick-time" data-hour="9" data-minute="00" data-period="PM">
+                                                <i class="fas fa-moon me-2"></i>9:00 PM
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button type="button" class="btn btn-outline-primary w-100 quick-time" data-hour="10" data-minute="00" data-period="PM">
+                                                <i class="fas fa-moon me-2"></i>10:00 PM
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button type="button" class="btn btn-outline-primary w-100 quick-time" data-hour="11" data-minute="00" data-period="PM">
+                                                <i class="fas fa-moon me-2"></i>11:00 PM
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button type="button" class="btn btn-outline-primary w-100 quick-time" data-hour="12" data-minute="00" data-period="AM">
+                                                <i class="fas fa-moon me-2"></i>12:00 AM
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Days</label>
+                            <div class="days-selector">
+                                {% for day in "MTWTFSS"|make_list %}
+                                <div class="form-check form-check-inline">
+                                    <input type="checkbox" name="days" value="{{ forloop.counter0 }}" 
+                                           class="form-check-input" id="day_{{ forloop.counter0 }}"
+                                           {% if forloop.counter0 in alarm.days %}checked{% endif %}>
+                                    <label class="form-check-label" for="day_{{ forloop.counter0 }}">{{ day }}</label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <div class="quick-days mt-2">
+                                <button type="button" class="btn btn-sm btn-outline-secondary quick-days-btn" data-days="0123456">
+                                    <i class="fas fa-calendar-check me-1"></i>Every Day
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary quick-days-btn" data-days="01234">
+                                    <i class="fas fa-briefcase me-1"></i>Weekdays
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary quick-days-btn" data-days="56">
+                                    <i class="fas fa-umbrella-beach me-1"></i>Weekends
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="id_sound" class="form-label">Sound</label>
+                            <select name="sound" id="id_sound" class="form-select form-select-lg" required>
+                                <option value="bell" {% if alarm.sound == 'bell' %}selected{% endif %}>Bell</option>
+                                <option value="chime" {% if alarm.sound == 'chime' %}selected{% endif %}>Chime</option>
+                                <option value="digital" {% if alarm.sound == 'digital' %}selected{% endif %}>Digital</option>
+                            </select>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <a href="{% url 'alarm_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                {% if alarm %}
+                                    <i class="fas fa-save me-2"></i>Save Changes
+                                {% else %}
+                                    <i class="fas fa-plus me-2"></i>Create Alarm
+                                {% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border: none;
+    border-radius: 15px;
+    background: #ffffff;
+}
+
+.card-title {
+    color: #2d3748;
+    font-weight: 600;
+}
+
+.form-label {
+    color: #4a5568;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.form-control, .form-select {
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.time-inputs {
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 12px;
+}
+
+.time-display {
+    text-align: center;
+    padding: 1rem;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: all 0.2s ease;
+}
+
+.selected-time {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.time-period {
+    font-size: 1.2rem;
+    color: #4a5568;
+    margin-left: 0.5rem;
+}
+
+.time-separator {
+    display: flex;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #4a5568;
+}
+
+.quick-times {
+    border-top: 1px solid #e2e8f0;
+    padding-top: 1rem;
+}
+
+.quick-time {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.quick-time:hover {
+    background: #4f46e5;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.quick-time i {
+    width: 1.2em;
+    text-align: center;
+}
+
+.quick-days {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.quick-days-btn {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 6px;
+}
+
+.days-selector {
+    background: #f8fafc;
+    padding: 1rem;
+    border-radius: 12px;
+}
+
+.form-check-input {
+    width: 1.2em;
+    height: 1.2em;
+    margin-top: 0.2em;
+    border: 2px solid #e2e8f0;
+}
+
+.form-check-input:checked {
+    background-color: #4f46e5;
+    border-color: #4f46e5;
+}
+
+.form-check-label {
+    color: #4a5568;
+    font-weight: 500;
+    padding-left: 0.5rem;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #4f46e5, #4338ca);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2);
+}
+
+.btn-outline-secondary {
+    border: 2px solid #e2e8f0;
+    color: #4a5568;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-secondary:hover {
+    background: #f8fafc;
+    border-color: #cbd5e0;
+    color: #2d3748;
+}
+
+@media (max-width: 576px) {
+    .time-inputs .row {
+        justify-content: center;
+    }
+    
+    .days-selector {
+        text-align: center;
+    }
+    
+    .quick-times .row {
+        margin: 0 -0.5rem;
+    }
+    
+    .quick-times .col-6 {
+        padding: 0 0.5rem;
+    }
+}
+</style>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const hourSelect = document.getElementById('id_hour');
+    const minuteSelect = document.getElementById('id_minute');
+    const periodSelect = document.getElementById('id_period');
+    const timeDisplay = document.querySelector('.time-value');
+    const timePeriod = document.querySelector('.time-period');
+    const timeDisplayContainer = document.querySelector('.time-display');
+
+    function updateTimeDisplay() {
+        const hour = hourSelect.value;
+        const minute = minuteSelect.value;
+        const period = periodSelect.value;
+        
+        if (hour && minute && period) {
+            timeDisplay.textContent = `${hour}:${minute}`;
+            timePeriod.textContent = period;
+            timeDisplayContainer.style.transform = 'scale(1.05)';
+            setTimeout(() => {
+                timeDisplayContainer.style.transform = 'scale(1)';
+            }, 200);
+        } else {
+            timeDisplay.textContent = '--:--';
+            timePeriod.textContent = 'AM';
+        }
+    }
+
+    // Set default time to current time (rounded to nearest 5 minutes) if creating new alarm
+    if (!hourSelect.querySelector('option[selected]')) {
+        const now = new Date();
+        let hours = now.getHours();
+        const minutes = Math.round(now.getMinutes() / 5) * 5;
+        const period = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12 || 12;
+
+        hourSelect.value = hours.toString();
+        minuteSelect.value = minutes.toString().padStart(2, '0');
+        periodSelect.value = period;
+        updateTimeDisplay();
+    }
+
+    // Update time display when selections change
+    hourSelect.addEventListener('change', updateTimeDisplay);
+    minuteSelect.addEventListener('change', updateTimeDisplay);
+    periodSelect.addEventListener('change', updateTimeDisplay);
+
+    // Quick time selection
+    document.querySelectorAll('.quick-time').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const hour = this.dataset.hour;
+            const minute = this.dataset.minute;
+            const period = this.dataset.period;
+            hourSelect.value = hour;
+            minuteSelect.value = minute;
+            periodSelect.value = period;
+            updateTimeDisplay();
+        });
+    });
+
+    // Quick days selection
+    document.querySelectorAll('.quick-days-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const days = this.dataset.days.split('');
+            document.querySelectorAll('input[name="days"]').forEach(checkbox => {
+                checkbox.checked = days.includes(checkbox.value);
+            });
+        });
+    });
+
+    // Initial time display update
+    updateTimeDisplay();
+});
+</script>
+{% endblock %}
+{% endblock %}

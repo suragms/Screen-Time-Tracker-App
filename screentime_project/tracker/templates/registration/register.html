@@ -1,0 +1,566 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Register - Screen Time Tracker{% endblock %}
+
+{% block content %}
+<div class="register-container">
+    <!-- Background -->
+    <div class="background">
+        <div class="background-gradient"></div>
+        <div class="background-pattern"></div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="register-card">
+            <!-- Header -->
+            <div class="register-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h1>Screen Time Tracker</h1>
+                </div>
+                <h2>Create Your Account</h2>
+                <p>Start tracking your digital wellness journey today</p>
+            </div>
+
+            <!-- Registration Form -->
+            <div class="register-form">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- Personal Information -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-user"></i>
+                            Personal Information
+                        </h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="{{ form.username.id_for_label }}">Username</label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-user"></i>
+                                    {{ form.username }}
+                                </div>
+                                {% if form.username.errors %}
+                                <div class="error-message">
+                                    {{ form.username.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="{{ form.email.id_for_label }}">Email Address</label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-envelope"></i>
+                                    {{ form.email }}
+                                </div>
+                                {% if form.email.errors %}
+                                <div class="error-message">
+                                    {{ form.email.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-shield-alt"></i>
+                            Security
+                        </h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="{{ form.password1.id_for_label }}">Password</label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-lock"></i>
+                                    {{ form.password1 }}
+                                </div>
+                                {% if form.password1.errors %}
+                                <div class="error-message">
+                                    {{ form.password1.errors }}
+                                </div>
+                                {% endif %}
+                                <div class="help-text">
+                                    <i class="fas fa-info-circle"></i>
+                                    Minimum 8 characters with letters, numbers & symbols
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="{{ form.password2.id_for_label }}">Confirm Password</label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-lock"></i>
+                                    {{ form.password2 }}
+                                </div>
+                                {% if form.password2.errors %}
+                                <div class="error-message">
+                                    {{ form.password2.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Profile -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-user-circle"></i>
+                            Profile Information
+                        </h3>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.bio.id_for_label }}">About You</label>
+                            <div class="input-wrapper textarea-wrapper">
+                                <i class="fas fa-info-circle"></i>
+                                {{ form.bio }}
+                            </div>
+                            {% if form.bio.errors %}
+                            <div class="error-message">
+                                {{ form.bio.errors }}
+                            </div>
+                            {% endif %}
+                            <div class="help-text">
+                                <i class="fas fa-lightbulb"></i>
+                                Tell us about your screen time habits and wellness goals
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.daily_screen_time_goal.id_for_label }}">Daily Screen Time Goal (minutes)</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-clock"></i>
+                                {{ form.daily_screen_time_goal }}
+                            </div>
+                            {% if form.daily_screen_time_goal.errors %}
+                            <div class="error-message">
+                                {{ form.daily_screen_time_goal.errors }}
+                            </div>
+                            {% endif %}
+                            <div class="help-text">
+                                <i class="fas fa-target"></i>
+                                Recommended: 30-480 minutes per day
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="form-actions">
+                        <button type="submit" class="submit-button">
+                            <span class="button-text">Create Account</span>
+                            <div class="button-loader">
+                                <div class="spinner"></div>
+                            </div>
+                        </button>
+                    </div>
+
+                    <!-- Login Link -->
+                    <div class="login-link">
+                        <p>Already have an account? <a href="{% url 'login' %}">Sign in here</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Reset and Base Styles */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    .register-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Background */
+    .background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+    }
+
+    .background-gradient {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .background-pattern {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: 
+            radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 1px, transparent 1px),
+            radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 1px, transparent 1px);
+        background-size: 100px 100px;
+        opacity: 0.5;
+    }
+
+    /* Main Content */
+    .main-content {
+        width: 100%;
+        max-width: 800px;
+        padding: 2rem;
+        z-index: 1;
+    }
+
+    /* Register Card */
+    .register-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 16px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        max-width: 100%;
+    }
+
+    /* Header */
+    .register-header {
+        text-align: center;
+        padding: 3rem 3rem 2rem;
+        background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .logo-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .logo-icon i {
+        color: white;
+        font-size: 1.8rem;
+    }
+
+    .logo h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin: 0;
+    }
+
+    .register-header h2 {
+        font-size: 2rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+    }
+
+    .register-header p {
+        color: #718096;
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+
+    /* Form */
+    .register-form {
+        padding: 3rem;
+    }
+
+    /* Form Sections */
+    .form-section {
+        margin-bottom: 2.5rem;
+    }
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #f7fafc;
+    }
+
+    .section-title i {
+        color: #667eea;
+        font-size: 1.3rem;
+    }
+
+    /* Form Grid */
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+
+    /* Form Groups */
+    .form-group {
+        margin-bottom: 2rem;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0.75rem;
+        font-size: 1rem;
+    }
+
+    .input-wrapper {
+        position: relative;
+        background: white;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+
+    .input-wrapper:focus-within {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .input-wrapper i {
+        position: absolute;
+        left: 1.25rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #a0aec0;
+        font-size: 1.1rem;
+        z-index: 1;
+    }
+
+    .input-wrapper input,
+    .input-wrapper textarea {
+        width: 100%;
+        padding: 1rem 1.25rem 1rem 3rem;
+        border: none;
+        background: transparent;
+        font-size: 1rem;
+        color: #2d3748;
+        outline: none;
+        font-family: inherit;
+    }
+
+    .input-wrapper input::placeholder,
+    .input-wrapper textarea::placeholder {
+        color: #a0aec0;
+    }
+
+    .textarea-wrapper textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    /* Error Messages */
+    .error-message {
+        color: #e53e3e;
+        font-size: 0.9rem;
+        margin-top: 0.75rem;
+        padding: 0.75rem 1rem;
+        background: rgba(229, 62, 62, 0.1);
+        border-radius: 8px;
+        border-left: 3px solid #e53e3e;
+    }
+
+    /* Help Text */
+    .help-text {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #718096;
+        font-size: 0.9rem;
+        margin-top: 0.75rem;
+        padding: 0.75rem 1rem;
+        background: rgba(102, 126, 234, 0.05);
+        border-radius: 8px;
+        border-left: 3px solid #667eea;
+    }
+
+    .help-text i {
+        color: #667eea;
+        font-size: 1rem;
+    }
+
+    /* Form Actions */
+    .form-actions {
+        margin-top: 3rem;
+    }
+
+    .submit-button {
+        width: 100%;
+        padding: 1.25rem;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        border-radius: 10px;
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .submit-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+    }
+
+    .submit-button:active {
+        transform: translateY(0);
+    }
+
+    .button-loader {
+        display: none;
+    }
+
+    .submit-button.loading .button-text {
+        display: none;
+    }
+
+    .submit-button.loading .button-loader {
+        display: block;
+    }
+
+    .spinner {
+        width: 24px;
+        height: 24px;
+        border: 3px solid rgba(255,255,255,0.3);
+        border-top: 3px solid white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Login Link */
+    .login-link {
+        text-align: center;
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .login-link p {
+        color: #718096;
+        font-size: 1rem;
+    }
+
+    .login-link a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s ease;
+    }
+
+    .login-link a:hover {
+        color: #764ba2;
+        text-decoration: underline;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .main-content {
+            padding: 1rem;
+            max-width: 100%;
+        }
+
+        .register-header {
+            padding: 2rem 1.5rem 1.5rem;
+        }
+
+        .register-form {
+            padding: 2rem 1.5rem;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .logo {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+        }
+
+        .register-header h2 {
+            font-size: 1.75rem;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .register-header {
+            padding: 1.5rem 1rem 1rem;
+        }
+
+        .register-form {
+            padding: 1.5rem 1rem;
+        }
+
+        .input-wrapper input,
+        .input-wrapper textarea {
+            padding: 0.875rem 1rem 0.875rem 2.75rem;
+        }
+
+        .input-wrapper i {
+            left: 1rem;
+        }
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const submitButton = document.querySelector('.submit-button');
+    
+    form.addEventListener('submit', function() {
+        submitButton.classList.add('loading');
+    });
+});
+</script>
+{% endblock %} 

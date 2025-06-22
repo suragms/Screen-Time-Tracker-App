@@ -1,0 +1,325 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load tracker_extras %}
+
+{% block title %}Dashboard - Screen Time Tracker{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'css/home.css' %}" rel="stylesheet">
+<style>
+    .facebook-layout {
+        display: grid;
+        grid-template-columns: 360px 1fr 360px;
+        gap: 20px;
+        max-width: 1920px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f0f2f5;
+        min-height: 100vh;
+    }
+
+    .left-sidebar {
+        position: sticky;
+        top: 20px;
+        height: calc(100vh - 40px);
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .user-profile {
+        display: flex;
+        align-items: center;
+        padding: 12px;
+        border-radius: 12px;
+        margin-bottom: 16px;
+        background: #f0f2f5;
+        transition: all 0.2s ease;
+    }
+
+    .user-profile:hover {
+        background: #e4e6eb;
+    }
+
+    .user-profile i {
+        font-size: 24px;
+        color: #1877f2;
+        margin-right: 12px;
+    }
+
+    .user-profile span {
+        font-weight: 600;
+        color: #1c1e21;
+        font-size: 16px;
+    }
+
+    .nav-item {
+        display: flex;
+        align-items: center;
+        padding: 12px;
+        border-radius: 12px;
+        margin-bottom: 4px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        color: #1c1e21;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .nav-item:hover {
+        background-color: #f0f2f5;
+        transform: translateX(4px);
+    }
+
+    .nav-item:active {
+        transform: scale(0.98);
+    }
+
+    .nav-item i {
+        margin-right: 12px;
+        font-size: 20px;
+        color: #1877f2;
+        transition: transform 0.2s ease;
+    }
+
+    .nav-item:hover i {
+        transform: scale(1.1);
+    }
+
+    .nav-item span {
+        font-weight: 500;
+        font-size: 15px;
+    }
+
+    .nav-item::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 3px;
+        background: #1877f2;
+        transform: scaleY(0);
+        transition: transform 0.2s ease;
+    }
+
+    .nav-item:hover::after {
+        transform: scaleY(1);
+    }
+
+    .main-feed {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .right-sidebar {
+        position: sticky;
+        top: 20px;
+        height: calc(100vh - 40px);
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .feed-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .activity-item {
+        display: flex;
+        align-items: center;
+        padding: 12px;
+        border-radius: 12px;
+        margin-bottom: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .activity-item:hover {
+        background: #f0f2f5;
+        transform: translateX(4px);
+    }
+
+    .activity-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #e4e6eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+        transition: transform 0.2s ease;
+    }
+
+    .activity-item:hover .activity-icon {
+        transform: scale(1.1);
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 16px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="facebook-layout">
+    <!-- Left Sidebar -->
+    <div class="left-sidebar">
+        <div class="user-profile">
+            <i class="fas fa-user-circle"></i>
+            <span>{{ request.user.username }}</span>
+        </div>
+        <a href="{% url 'list_entries' %}" class="nav-item">
+            <i class="fas fa-chart-line"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="{% url 'music_list' %}" class="nav-item">
+            <i class="fas fa-music"></i>
+            <span>Music Player</span>
+        </a>
+        <a href="{% url 'stopwatch_list' %}" class="nav-item">
+            <i class="fas fa-stopwatch"></i>
+            <span>Stopwatch</span>
+        </a>
+        <a href="{% url 'note_list' %}" class="nav-item">
+            <i class="fas fa-sticky-note"></i>
+            <span>Notes</span>
+        </a>
+        <a href="{% url 'alarm_list' %}" class="nav-item">
+            <i class="fas fa-bell"></i>
+            <span>Alarm</span>
+        </a>
+    </div>
+
+    <!-- Main Feed -->
+    <div class="main-feed">
+        <!-- Today's Progress -->
+        <div class="feed-card">
+            <div class="card-header">
+                <h3><i class="fas fa-chart-line"></i> Today's Progress</h3>
+                <span class="badge {% if goal_percentage >= 100 %}badge-success{% else %}badge-primary{% endif %}">
+                    {{ goal_percentage|floatformat:0 }}%
+                </span>
+            </div>
+            <div class="progress-container">
+                <div class="progress-bar" data-width="{{ goal_percentage }}" role="progressbar" aria-valuenow="{{ goal_percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <div class="progress-info">
+                <div class="progress-stat">
+                    <span class="stat-label">Goal</span>
+                    <span class="stat-value">{{ daily_goal }} min</span>
+                </div>
+                <div class="progress-stat">
+                    <span class="stat-label">Remaining</span>
+                    <span class="stat-value">{{ daily_goal|sub:today_total }} min</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="feed-card">
+            <div class="card-header">
+                <h3><i class="fas fa-history"></i> Recent Activity</h3>
+                <a href="{% url 'list_entries' %}" class="view-all">View All</a>
+            </div>
+            {% if recent_entries %}
+                <div class="activity-list">
+                    {% for entry in recent_entries %}
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-header">
+                                <h4>{{ entry.activity }}</h4>
+                                <span class="activity-time">{{ entry.start_time|date:"M d, Y" }}</span>
+                            </div>
+                            <div class="activity-meta">
+                                <span class="activity-category">{{ entry.category }}</span>
+                                <span class="activity-duration">{{ entry.duration }} minutes</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-clipboard-list"></i>
+                    <p>No recent activities</p>
+                    <a href="{% url 'list_entries' %}" class="btn btn-primary">Add Entry</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Right Sidebar -->
+    <div class="right-sidebar">
+        <div class="stat-card">
+            <h3>Today's Stats</h3>
+            <div class="stat-info">
+                <span class="stat-value">{{ today_total|floatformat:0 }}</span>
+                <span class="stat-label">Today's Minutes</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <h3>Weekly Average</h3>
+            <div class="stat-info">
+                <span class="stat-value">{{ weekly_total|div:7|floatformat:0 }}</span>
+                <span class="stat-label">Daily Average</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <h3>Weekly Goal</h3>
+            <div class="stat-info">
+                <span class="stat-value">{{ daily_goal|mul:7 }}</span>
+                <span class="stat-label">Total Minutes</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Progress bar animation
+    const progressBar = document.querySelector('.progress-bar');
+    if (progressBar) {
+        const width = progressBar.getAttribute('data-width');
+        setTimeout(() => {
+            progressBar.style.width = width + '%';
+        }, 100);
+    }
+
+    // Add focus styles for accessibility
+    document.querySelectorAll('.nav-item, .btn, .view-all').forEach(element => {
+        element.addEventListener('focus', () => {
+            element.classList.add('focused');
+        });
+        element.addEventListener('blur', () => {
+            element.classList.remove('focused');
+        });
+    });
+});
+</script>
+{% endblock %}

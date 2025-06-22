@@ -1,0 +1,175 @@
+        .btn-back {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 14px 24px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #cbd5e1;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 160px;
+            justify-content: center;
+            margin-top: 16px;
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-back:active {
+            transform: translateY(0);
+        }
+
+        .btn-back i {
+            font-size: 0.9rem;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #cbd5e1;
+            font-size: 0.9rem;
+            z-index: 2;
+            font-weight: 500;
+        }
+
+        .alert {
+            border-radius: 12px;
+            border: none;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            animation: slideInDown 0.5s ease-out;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .security-notice {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border: 1px solid #fecaca;
+            border-radius: 14px;
+            padding: 24px;
+            margin-top: 28px;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.1);
+        }
+
+        .security-icon {
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .security-icon i {
+            font-size: 1.1rem;
+        }
+
+        .security-text {
+            flex: 1;
+        }
+
+        .security-text strong {
+            color: #dc2626;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .security-text p {
+            margin: 0;
+            color: #7f1d1d;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            font-weight: 500;
+        }
+
+        /* Responsive design */
+        @media (max-width: 576px) {
+            body {
+                padding: 16px;
+            }
+            
+            .login-container {
+                padding: 20px;
+                max-width: 100%;
+                gap: 28px;
+            }
+            
+            .login-card {
+                border-radius: 18px;
+            }
+            
+            .login-header {
+                padding: 36px 28px;
+            }
+            
+            .login-body {
+                padding: 32px 28px;
+            }
+            
+            .admin-icon {
+                width: 76px;
+                height: 76px;
+            }
+            
+            .admin-icon i {
+                font-size: 2.4rem;
+            }
+
+            .login-header h3 {
+                font-size: 1.8rem;
+            }
+
+            .form-control, .input-group-text {
+                padding: 16px 16px;
+                font-size: 1rem;
+            }
+
+            .btn-login {
+                padding: 16px;
+                font-size: 1rem;
+            }
+
+            .btn-back {
+                padding: 12px 20px;
+                font-size: 0.95rem;
+                min-width: 140px;
+            }
+
+            .footer {
+                bottom: 20px;
+                font-size: 0.85rem;
+            }
+        } 

@@ -1,0 +1,315 @@
+{% extends 'tracker/admin/base.html' %}
+
+{% block title %}User Detail - {{ user.username }} - Screen Time Tracker{% endblock %}
+{% block page_title %}User Detail: {{ user.username }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- User Profile Card -->
+    <div class="col-lg-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="m-0 font-weight-bold">
+                    <i class="fas fa-user me-2"></i>
+                    User Profile
+                </h6>
+            </div>
+            <div class="card-body text-center">
+                {% if user.profile.profile_picture %}
+                    <img src="{{ user.profile.profile_picture.url }}" 
+                         class="rounded-circle mb-3" width="120" height="120" 
+                         alt="{{ user.username }}">
+                {% else %}
+                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" 
+                         style="width: 120px; height: 120px;">
+                        <i class="fas fa-user fa-3x text-white"></i>
+                    </div>
+                {% endif %}
+                
+                <h5 class="card-title">{{ user.username }}</h5>
+                <p class="text-muted">{{ user.email|default:"No email provided" }}</p>
+                
+                <div class="row text-center mt-3">
+                    <div class="col-6">
+                        <h6 class="text-primary">{{ entries.count }}</h6>
+                        <small class="text-muted">Entries</small>
+                    </div>
+                    <div class="col-6">
+                        <h6 class="text-success">
+                            {% with total_time=0 %}
+                                {% for entry in entries %}
+                                    {% if entry.duration %}
+                                        {% with total_time=total_time|add:entry.duration %}{% endwith %}
+                                    {% endif %}
+                                {% endfor %}
+                                {{ total_time|floatformat:0 }}
+                            {% endwith %}
+                        </h6>
+                        <small class="text-muted">Minutes</small>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="text-start">
+                    <p><strong>Date Joined:</strong> {{ user.date_joined|date:"M d, Y H:i" }}</p>
+                    <p><strong>Last Login:</strong> 
+                        {% if user.last_login %}
+                            {{ user.last_login|date:"M d, Y H:i" }}
+                        {% else %}
+                            <span class="text-muted">Never</span>
+                        {% endif %}
+                    </p>
+                    <p><strong>Status:</strong> 
+                        {% if user.is_active %}
+                            <span class="badge bg-success">Active</span>
+                        {% else %}
+                            <span class="badge bg-danger">Inactive</span>
+                        {% endif %}
+                    </p>
+                    {% if user.profile.bio %}
+                        <p><strong>Bio:</strong> {{ user.profile.bio }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Statistics -->
+    <div class="col-lg-8 mb-4">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-stopwatch fa-2x text-info mb-2"></i>
+                        <h5 class="card-title">{{ stopwatches }}</h5>
+                        <p class="card-text text-muted">Stopwatches</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-bell fa-2x text-warning mb-2"></i>
+                        <h5 class="card-title">{{ alarms }}</h5>
+                        <p class="card-text text-muted">Alarms</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-sticky-note fa-2x text-success mb-2"></i>
+                        <h5 class="card-title">{{ notes }}</h5>
+                        <p class="card-text text-muted">Notes</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-music fa-2x text-primary mb-2"></i>
+                        <h5 class="card-title">{{ music_files }}</h5>
+                        <p class="card-text text-muted">Music Files</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Category Breakdown -->
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="m-0 font-weight-bold">
+                    <i class="fas fa-chart-pie me-2"></i>
+                    Category Breakdown
+                </h6>
+            </div>
+            <div class="card-body">
+                <canvas id="categoryChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Weekly Activity -->
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="m-0 font-weight-bold">
+                    <i class="fas fa-chart-line me-2"></i>
+                    Weekly Activity
+                </h6>
+            </div>
+            <div class="card-body">
+                <canvas id="weeklyChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Entries -->
+<div class="card">
+    <div class="card-header">
+        <h6 class="m-0 font-weight-bold">
+            <i class="fas fa-history me-2"></i>
+            Recent Screen Time Entries
+        </h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Activity</th>
+                        <th>Category</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Duration</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in entries|slice:":10" %}
+                    <tr>
+                        <td>{{ entry.activity }}</td>
+                        <td>
+                            <span class="badge bg-primary">{{ entry.get_category_display }}</span>
+                        </td>
+                        <td>{{ entry.start_time|date:"M d, Y H:i" }}</td>
+                        <td>
+                            {% if entry.end_time %}
+                                {{ entry.end_time|date:"M d, Y H:i" }}
+                            {% else %}
+                                <span class="text-warning">Running</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if entry.duration %}
+                                {{ entry.duration }} min
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if entry.notes %}
+                                {{ entry.notes|truncatechars:30 }}
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">
+                            <i class="fas fa-inbox me-2"></i>
+                            No entries found for this user
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        {% if entries.count > 10 %}
+            <div class="text-center mt-3">
+                <a href="#" class="btn btn-outline-primary">
+                    View All {{ entries.count }} Entries
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Back Button -->
+<div class="mt-4">
+    <a href="{% url 'user_management' %}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i>
+        Back to User Management
+    </a>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Category Breakdown Chart
+const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+const categoryChart = new Chart(categoryCtx, {
+    type: 'doughnut',
+    data: {
+        labels: [
+            {% for item in category_breakdown %}
+                '{{ item.category_name }}',
+            {% endfor %}
+        ],
+        datasets: [{
+            data: [
+                {% for item in category_breakdown %}
+                    {{ item.total_duration|default:0 }},
+                {% endfor %}
+            ],
+            backgroundColor: [
+                '#667eea',
+                '#f093fb',
+                '#4facfe',
+                '#43e97b',
+                '#fa709a',
+                '#fee140',
+                '#a8edea'
+            ],
+            borderWidth: 2,
+            borderColor: '#fff'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+// Weekly Activity Chart
+const weeklyCtx = document.getElementById('weeklyChart').getContext('2d');
+const weeklyChart = new Chart(weeklyCtx, {
+    type: 'bar',
+    data: {
+        labels: [
+            {% for activity in weekly_activity %}
+                '{{ activity.date }}',
+            {% endfor %}
+        ],
+        datasets: [{
+            label: 'Duration (minutes)',
+            data: [
+                {% for activity in weekly_activity %}
+                    {{ activity.duration }},
+                {% endfor %}
+            ],
+            backgroundColor: 'rgba(102, 126, 234, 0.8)',
+            borderColor: '#667eea',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        },
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
+    }
+});
+</script>
+{% endblock %} 

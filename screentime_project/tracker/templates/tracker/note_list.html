@@ -1,0 +1,58 @@
+{% extends 'tracker/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Notes</h2>
+        <a href="{% url 'note_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> New Note
+        </a>
+    </div>
+
+    <div class="row">
+        {% for note in notes %}
+        <div class="col-md-4 mb-4">
+            <div class="card" style="background-color: {{ note.color }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ note.title }}</h5>
+                    <p class="card-text">{{ note.content|linebreaks }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            Last updated: {{ note.updated_at|date:"M d, Y H:i" }}
+                        </small>
+                        <a href="{% url 'note_update' note.id %}" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                No notes created yet. Create one to get started!
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% block extra_css %}
+<style>
+.card {
+    transition: transform 0.2s;
+    height: 100%;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.card-text {
+    max-height: 150px;
+    overflow-y: auto;
+}
+</style>
+{% endblock %}
+{% endblock %} 
