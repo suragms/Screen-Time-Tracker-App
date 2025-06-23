@@ -30,9 +30,12 @@
                             <button class="btn btn-sm btn-outline-secondary reset-btn" data-pk="{{ stopwatch.pk }}">
                                 <i class="fas fa-redo"></i>
                             </button>
-                            <a href="{% url 'stopwatch_delete' stopwatch.pk %}" class="btn btn-sm btn-outline-danger delete-btn">
-                                <i class="fas fa-trash"></i>
-                            </a>
+                            <form method="post" action="{% url 'stopwatch_delete' stopwatch.pk %}" class="d-inline delete-form" data-pk="{{ stopwatch.pk }}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-danger delete-btn">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
                         </div>
                     </div>
                     <div class="stopwatch-display mt-2" data-pk="{{ stopwatch.pk }}">
