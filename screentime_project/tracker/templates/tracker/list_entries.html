@@ -2,10 +2,7 @@
 
 {% block content %}
 <!-- Theme Switcher -->
-<div class="theme-switcher">
-    <a href="{% url 'home' %}" class="btn btn-icon me-2" title="Home">
-        <i class="fas fa-home"></i>
-    </a>
+<div class="theme-switcher" style="display: none;">
     <button id="themeToggle" class="btn btn-icon">
         <i class="fas fa-sun light-icon"></i>
         <i class="fas fa-moon dark-icon"></i>
@@ -34,7 +31,7 @@
                         </thead>
                         <tbody>
                             {% for timer in active_timers %}
-                            <tr>
+                            <tr class="active-timer-highlight">
                                 <td>{{ timer.activity }}</td>
                                 <td>
                                     <span class="badge bg-primary">{{ timer.get_category_display }}</span>
@@ -85,7 +82,7 @@
     <!-- Quick Access Section -->
     <div class="quick-access mb-4">
         <div class="row g-3">
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <a href="{% url 'add_entry' %}" class="quick-access-card">
                     <div class="icon-wrapper bg-primary">
                         <i class="fas fa-plus"></i>
@@ -96,7 +93,18 @@
                     </div>
                 </a>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
+                <a href="{% url 'music_list' %}" class="quick-access-card music-card">
+                    <div class="icon-wrapper bg-info rgb-glow">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <div class="content">
+                        <h6>Listen to Music</h6>
+                        <p class="text-muted mb-0">Play your favorite tracks</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
                 <a href="{% url 'profile' %}" class="quick-access-card">
                     <div class="icon-wrapper bg-success">
                         <i class="fas fa-user"></i>
@@ -159,21 +167,27 @@
     </div>
 
     <!-- Entries Table -->
-    <div class="card border-0 shadow-sm">
+    <div class="card border-0 shadow-sm entries-table">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h5 class="card-title mb-0">Recent Entries</h5>
+                <div class="table-controls">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" class="form-control" id="tableSearch" placeholder="Search entries...">
+                    </div>
+                </div>
             </div>
             
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover table-professional">
                     <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>Category</th>
-                            <th>Duration</th>
-                            <th>Notes</th>
-                            <th>Actions</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Category</th>
+                            <th scope="col">Duration</th>
+                            <th scope="col">Notes</th>
+                            <th scope="col">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -181,7 +195,7 @@
                         <tr>
                             <td>{{ entry.start_time|date:"M d, Y H:i" }}</td>
                             <td>
-                                <span class="badge bg-primary">{{ entry.category }}</span>
+                                <span class="badge bg-primary badge-professional">{{ entry.category }}</span>
                             </td>
                             <td>
                                 {% if entry.end_time %}
@@ -192,18 +206,18 @@
                                     </span>
                                 {% endif %}
                             </td>
-                            <td>{{ entry.notes|truncatechars:50 }}</td>
+                            <td class="notes-cell">{{ entry.notes|truncatechars:50 }}</td>
                             <td>
-                                <div class="btn-group">
+                                <div class="btn-group" role="group">
                                     {% if not entry.end_time %}
-                                        <a href="{% url 'stop_timer' entry.id %}" class="btn btn-sm btn-danger">
+                                        <a href="{% url 'stop_timer' entry.id %}" class="btn btn-sm btn-danger btn-icon-only" title="Stop Timer">
                                             <i class="fas fa-stop"></i>
                                         </a>
                                     {% endif %}
-                                    <a href="{% url 'edit_entry' entry.id %}" class="btn btn-sm btn-outline-primary">
+                                    <a href="{% url 'edit_entry' entry.id %}" class="btn btn-sm btn-outline-primary btn-icon-only" title="Edit Entry">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ entry.id }}">
+                                    <button type="button" class="btn btn-sm btn-outline-danger btn-icon-only" data-bs-toggle="modal" data-bs-target="#deleteModal{{ entry.id }}" title="Delete Entry">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
@@ -220,7 +234,7 @@
                 <ul class="pagination justify-content-center">
                     {% if entries.has_previous %}
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ entries.previous_page_number }}">Previous</a>
+                        <a class="page-link" href="?page={{ entries.previous_page_number }}"><i class="fas fa-chevron-left"></i></a>
                     </li>
                     {% endif %}
 
@@ -232,7 +246,7 @@
 
                     {% if entries.has_next %}
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ entries.next_page_number }}">Next</a>
+                        <a class="page-link" href="?page={{ entries.next_page_number }}"><i class="fas fa-chevron-right"></i></a>
                     </li>
                     {% endif %}
                 </ul>
@@ -305,6 +319,7 @@
         background-color: var(--bg-primary);
         color: var(--text-primary);
         transition: background-color 0.3s ease, color 0.3s ease;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     }
 
     .theme-switcher {
@@ -312,6 +327,7 @@
         top: 1rem;
         right: 1rem;
         z-index: 1000;
+        display: block;
     }
 
     .btn-icon {
@@ -348,40 +364,98 @@
         background-color: var(--card-bg);
         border-color: var(--card-border);
         transition: all 0.3s ease;
+        border-radius: 0.75rem;
     }
 
     .card:hover {
         transform: translateY(-2px);
-        box-shadow: var(--shadow);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
     /* Table Styles */
     .table {
         color: var(--text-primary);
+        border-collapse: separate;
+        border-spacing: 0;
     }
 
     .table th {
         color: var(--text-secondary);
-        border-bottom-color: var(--border-color);
+        border-bottom: 2px solid var(--border-color);
+        padding: 1rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.05em;
     }
 
     .table td {
-        border-bottom-color: var(--border-color);
+        border-bottom: 1px solid var(--border-color);
+        padding: 1rem;
+        vertical-align: middle;
+        font-size: 0.9rem;
+    }
+
+    /* Professional Table Styles */
+    .table-professional {
+        background: var(--card-bg);
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+
+    .table-professional thead {
+        background: var(--bg-secondary);
+    }
+
+    .table-professional tbody tr {
+        transition: background-color 0.2s ease;
+    }
+
+    .table-professional tbody tr:hover {
+        background-color: rgba(37, 99, 235, 0.05);
+    }
+
+    .table-professional .notes-cell {
+        max-width: 200px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     /* Badge Styles */
-    .badge {
+    .badge-professional {
         font-weight: 500;
-        padding: 0.5em 0.75em;
+        padding: 0.4em 0.8em;
+        border-radius: 0.25rem;
+        font-size: 0.85rem;
+        background: var(--primary-color);
+        color: white;
+        transition: all 0.2s ease;
+    }
+
+    .badge-professional:hover {
+        filter: brightness(1.1);
     }
 
     /* Button Styles */
-    .btn {
-        transition: all 0.3s ease;
+    .btn-icon-only {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        border-radius: 0.25rem;
+        transition: all 0.2s ease;
     }
 
-    .btn:hover {
+    .btn-icon-only:hover {
         transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-group .btn-icon-only:not(:last-child) {
+        border-right: none;
     }
 
     /* Active Timers Styles */
@@ -392,6 +466,24 @@
     .timer-duration {
         font-family: monospace;
         font-weight: 500;
+        color: var(--primary-color);
+    }
+
+    .active-timer-highlight {
+        position: relative;
+        animation: pulse-highlight 2s infinite;
+    }
+
+    @keyframes pulse-highlight {
+        0% {
+            background-color: var(--card-bg);
+        }
+        50% {
+            background-color: rgba(37, 99, 235, 0.1);
+        }
+        100% {
+            background-color: var(--card-bg);
+        }
     }
 
     /* Quick Access Styles */
@@ -426,6 +518,47 @@
         font-size: 1.25rem;
     }
 
+    /* Music Card with RGB Lights */
+    .music-card .icon-wrapper {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .rgb-glow::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: conic-gradient(
+            red, orange, yellow, green, blue, purple, red
+        );
+        animation: rotate-rgb 3s linear infinite;
+        z-index: -1;
+    }
+
+    .rgb-glow::after {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        right: 2px;
+        bottom: 2px;
+        background: var(--info-color);
+        border-radius: 10px;
+        z-index: -1;
+    }
+
+    @keyframes rotate-rgb {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
     /* User Info Styles */
     .user-info {
         background: var(--card-bg);
@@ -453,12 +586,16 @@
         padding: 1rem 1.5rem;
         box-shadow: var(--shadow);
         border: 1px solid var(--card-border);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
 
     /* Modal Styles */
     .modal-content {
         background-color: var(--card-bg);
         border: 1px solid var(--card-border);
+        border-radius: 0.5rem;
     }
 
     .modal-header {
@@ -474,6 +611,7 @@
         background-color: var(--bg-secondary);
         border-color: var(--border-color);
         color: var(--text-primary);
+        border-radius: 0.25rem;
     }
 
     .form-control:focus, .form-select:focus {
@@ -481,6 +619,21 @@
         border-color: var(--primary-color);
         color: var(--text-primary);
         box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.1);
+    }
+
+    /* Table Search Input */
+    .table-controls .input-group {
+        max-width: 250px;
+    }
+
+    .table-controls .input-group-text {
+        background: var(--bg-secondary);
+        border-color: var(--border-color);
+        color: var(--text-secondary);
+    }
+
+    .table-controls .form-control {
+        border-left: none;
     }
 
     /* Pagination Styles */
@@ -492,11 +645,62 @@
         background-color: var(--card-bg);
         border-color: var(--border-color);
         color: var(--text-primary);
+        border-radius: 0.25rem;
+        margin: 0 0.2rem;
+        transition: all 0.2s ease;
     }
 
     .page-item.active .page-link {
         background-color: var(--primary-color);
         border-color: var(--primary-color);
+        color: white;
+    }
+
+    .page-link:hover {
+        background-color: var(--bg-secondary);
+        color: var(--primary-color);
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 767px) {
+        .quick-access-card {
+            padding: 1rem;
+        }
+        .quick-access-card .icon-wrapper {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+        }
+        .quick-access-card .content h6 {
+            font-size: 1rem;
+        }
+        .quick-access-card .content p {
+            font-size: 0.85rem;
+        }
+        .total-time-card {
+            margin-top: 1rem;
+            justify-content: center;
+        }
+        .dashboard-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .table-professional th,
+        .table-professional td {
+            padding: 0.75rem;
+            font-size: 0.85rem;
+        }
+        .table-professional .notes-cell {
+            max-width: 100px;
+        }
+        .btn-icon-only {
+            width: 32px;
+            height: 32px;
+            font-size: 0.8rem;
+        }
+        .table-controls .input-group {
+            max-width: 200px;
+        }
     }
 </style>
 
@@ -603,6 +807,24 @@
     // Update timers every minute
     setInterval(updateTimers, 60000);
     updateTimers(); // Initial update
+
+    // Table Search Functionality
+    document.getElementById('tableSearch').addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const rows = document.querySelectorAll('.table-professional tbody tr');
+        
+        rows.forEach(row => {
+            const date = row.querySelector('td:nth-child(1)').textContent.toLowerCase();
+            const category = row.querySelector('td:nth-child(2) .badge').textContent.toLowerCase();
+            const notes = row.querySelector('.notes-cell').textContent.toLowerCase();
+            
+            if (date.includes(searchTerm) || category.includes(searchTerm) || notes.includes(searchTerm)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
 </script>
 {% endblock %}
 {% endblock %}

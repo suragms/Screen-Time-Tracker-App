@@ -59,18 +59,29 @@ def list_entries(request):
     # Prepare data for category distribution chart
     category_labels = [item['category'] for item in activity_data]
     category_data = [item['total_duration'] / 60 for item in activity_data]  # Convert to hours
-    
+
+    # Calculate today's, this week's, and this month's usage
+    today = timezone.now().date()
+    week_start = today - timedelta(days=today.weekday())
+    month_start = today.replace(day=1)
+    today_time = entries.filter(start_time__date=today).aggregate(total=Sum('duration'))['total'] or 0
+    week_time = entries.filter(start_time__date__gte=week_start).aggregate(total=Sum('duration'))['total'] or 0
+    month_time = entries.filter(start_time__date__gte=month_start).aggregate(total=Sum('duration'))['total'] or 0
+
     context = {
         'entries': entries,
         'total_time': total_time,
         'active_timer_durations': active_timer_durations,
         'activity_data': activity_data,
-        'daily_labels': json.dumps(daily_labels),
-        'daily_data': json.dumps(daily_data),
+        'daily_labels': json.dumps(daily_labels[::-1]),
+        'daily_data': json.dumps(daily_data[::-1]),
         'category_labels': json.dumps(category_labels),
         'category_data': json.dumps(category_data),
+        'today_time': today_time,
+        'week_time': week_time,
+        'month_time': month_time,
     }
-    return render(request, 'list_entries.html', context)
+    return render(request, 'tracker/list_entries.html', context)
 
 @login_required
 def add_entry(request):

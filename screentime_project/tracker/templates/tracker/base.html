@@ -208,6 +208,73 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+                <i class="fas fa-clock me-2"></i>
+                <span class="brand-text">Screen Time Tracker</span>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %} d-flex align-items-center" href="{% url 'home' %}">
+                            <i class="fas fa-home me-2"></i>
+                            <span>Home</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'list_entries' %}active{% endif %} d-flex align-items-center" href="{% url 'list_entries' %}">
+                            <i class="fas fa-chart-line me-2"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'add_entry' %}active{% endif %} d-flex align-items-center" href="{% url 'add_entry' %}">
+                            <i class="fas fa-plus-circle me-2"></i>
+                            <span>Add Entry</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %} d-flex align-items-center" href="{% url 'profile' %}">
+                            <i class="fas fa-user-circle me-2"></i>
+                            <span>Profile</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'stopwatch_list' %}active{% endif %} d-flex align-items-center" href="{% url 'stopwatch_list' %}">
+                            <i class="fas fa-stopwatch me-2"></i>
+                            <span>Stopwatch</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'note_list' %}active{% endif %} d-flex align-items-center" href="{% url 'note_list' %}">
+                            <i class="fas fa-sticky-note me-2"></i>
+                            <span>Notes</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'alarm_list' %}active{% endif %} d-flex align-items-center" href="{% url 'alarm_list' %}">
+                            <i class="fas fa-bell me-2"></i>
+                            <span>Alarm</span>
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav align-items-center ms-3 flex-row gap-2">
+                    <li class="nav-item">
+                        <a class="btn btn-outline-primary d-flex align-items-center" href="{% url 'logout' %}">
+                            <i class="fas fa-sign-out-alt me-2"></i>
+                            <span>Logout</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- End Navigation Bar -->
     {% block body_content %}
     <div class="container mt-4">
         {% block content %}{% endblock %}

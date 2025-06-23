@@ -5,45 +5,8 @@
 
 {% block body_content %}
 <div class="spotify-container">
-    <!-- Sidebar -->
-    <aside class="spotify-sidebar">
-        <div class="sidebar-header">
-            <i class="fas fa-headphones-alt logo-icon"></i>
-            <span class="logo-text">Music</span>
-        </div>
-        <nav class="sidebar-nav">
-            <a href="{% url 'music_list' %}" class="sidebar-link active"><i class="fas fa-music"></i> <span>Your Library</span></a>
-            <a href="{% url 'music_upload' %}" class="sidebar-link"><i class="fas fa-plus-square"></i> <span>Upload</span></a>
-        </nav>
-       
-        <div class="sidebar-footer">
-            <div class="user-menu">
-                
-                <div class="user-dropdown" id="userDropdown">
-                    <a href="{% url 'profile' %}" class="dropdown-item"><i class="fas fa-user-circle"></i> <span>Account</span></a>
-                    <a href="{% url 'home' %}" class="dropdown-item"><i class="fas fa-home"></i> <span>Home</span></a>
-                    <div class="dropdown-divider"></div>
-                    <a href="{% url 'logout' %}" class="dropdown-item text-danger"><i class="fas fa-sign-out-alt"></i> <span>Log out</span></a>
-                </div>
-            </div>
-        </div>
-    </aside>
-
-    <!-- Main Content -->
+    <!-- Music List Only, navbar/sidebar and main-header removed -->
     <main class="spotify-main">
-        <!-- Main Content Header -->
-        <header class="main-header">
-            <div class="header-left">
-                <button class="btn-nav" id="backBtn" title="Go back"><i class="fas fa-chevron-left"></i></button>
-                <button class="btn-nav" id="forwardBtn" title="Go forward"><i class="fas fa-chevron-right"></i></button>
-                <div class="search-container">
-                    <i class="fas fa-search search-icon"></i>
-                    <input type="text" class="search-input" placeholder="Search for songs, artists...">
-                </div>
-            </div>
-        </header>
-
-        <!-- Music List -->
         <section class="spotify-music-list">
             <h2>Your Music</h2>
             {% if songs %}
@@ -55,7 +18,6 @@
                             <th>Title</th>
                             <th>Artist</th>
                             <th>Upload Date</th>
-                           
                         </tr>
                     </thead>
                     <tbody>
@@ -111,6 +73,11 @@
             </div>
         </footer>
     </main>
+    <!-- Floating Upload Button -->
+    <a href="{% url 'music_upload' %}" class="floating-upload-btn" title="Upload Music">
+        <span class="glow-bg"></span>
+        <i class="fas fa-upload"></i>
+    </a>
 </div>
 
 <!-- Fullscreen Player -->
@@ -247,9 +214,10 @@ body.dark-theme, .dark-theme .spotify-container {
 }
 
 .spotify-music-list {
-    padding: 32px 48px 120px 48px;
+    flex: 1 1 auto;
+    padding: 32px 48px 0 48px;
+    margin-bottom: 90px;
     background: var(--spotify-dark);
-    flex: 1;
 }
 .spotify-music-list h2 {
     font-size: 2rem;
@@ -464,6 +432,13 @@ body.dark-theme, .dark-theme .spotify-container {
     }
     .spotify-music-list {
         padding: 16px 2px 120px 2px;
+    }
+    .floating-upload-btn {
+        left: 12px;
+        bottom: 12px;
+        width: 48px;
+        height: 48px;
+        font-size: 1.4rem;
     }
 }
 
@@ -862,7 +837,62 @@ body.dark-theme, .dark-theme .spotify-container {
     transform: translateY(-50%);
     color: var(--spotify-gray);
 }
+
+.floating-upload-btn {
+    position: fixed;
+    left: 32px;
+    bottom: 32px;
+    z-index: 1001;
+    background: var(--spotify-green);
+    color: var(--spotify-black);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    border: none;
+    text-decoration: none;
+    overflow: visible;
+}
+.floating-upload-btn .glow-bg {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 90px;
+    height: 90px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    z-index: -1;
+    background: conic-gradient(
+        #ff005a, #fffd44, #00ffae, #00c3ff, #ff005a
+    );
+    filter: blur(18px) brightness(1.2);
+    opacity: 0.7;
+    animation: rgb-glow 3s linear infinite;
+}
+@keyframes rgb-glow {
+    0% {
+        filter: blur(18px) brightness(1.2) hue-rotate(0deg);
+    }
+    100% {
+        filter: blur(18px) brightness(1.2) hue-rotate(360deg);
+    }
+}
+.floating-upload-btn:hover .glow-bg {
+    opacity: 1;
+    filter: blur(24px) brightness(1.4);
+}
+.floating-upload-btn i {
+    position: relative;
+    z-index: 1;
+}
 </style>
+
+{% endblock body_content %}
 
 {% block extra_js %}
 <script>
@@ -1493,5 +1523,4 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-{% endblock %}
-{% endblock body_content %}
+{% endblock extra_js %}
