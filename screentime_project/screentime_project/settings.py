@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-bchlafz794@t2uf9&3#zzb2%x0%=6w=q^faf#66dqf(0typpfx
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['screen-time-tracker-app.onrender.com']
 
 
 # Application definition
